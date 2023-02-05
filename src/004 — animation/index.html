@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Basic</title>
+    </head>
+    <body style="margin: 0;">
+        <canvas class="webgl"></canvas>
+
+        <script type="module">
+            import * as THREE from 'three'
+            import gsap from 'gsap'
+
+            // canvas
+            const canvas = document.querySelector('canvas.webgl')
+
+            // sizes
+            const sizes = {
+                width: 500,
+                height: 500
+            }
+
+            // scene
+            const scene = new THREE.Scene()
+
+            // obj
+            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+            const cubeMaterial = new THREE.MeshBasicMaterial({
+                color: 'blue'
+            })
+            const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
+            scene.add(cubeMesh)
+
+            // cam
+            const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
+            camera.position.z = 2
+            scene.add(camera)
+
+            // renderer
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas
+            })
+            renderer.setSize(sizes.width, sizes.height)
+
+            // clock
+            const clock = new THREE.Clock()
+
+            // gsap example
+            gsap.to(cubeMesh.position, {
+                duration: 1,
+                delay: 1,
+                x: 2
+            })
+            gsap.to(cubeMesh.position, {
+                duration: 1,
+                delay: 2,
+                x: 0
+            })
+
+            const tick = () => {
+                // clock
+                // const elapsedTime = clock.getElapsedTime()
+
+                // update (animate)
+                // cubeMesh.rotation.y = elapsedTime * Math.PI * 2
+                // cubeMesh.position.y = Math.sin(elapsedTime)
+                // cubeMesh.position.x = Math.cos(elapsedTime)
+                // camera.position.y = Math.sin(elapsedTime)
+                // camera.position.x = Math.cos(elapsedTime)
+                // camera.lookAt(cubeMesh.position)
+
+                // render
+                renderer.render(scene, camera)
+
+                window.requestAnimationFrame(tick)
+            }
+            tick()
+        </script>
+    </body>
+</html>
