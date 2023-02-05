@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Transform</title>
+    </head>
+    <body style="margin: 0;">
+        <canvas class="webgl"></canvas>
+
+        <script type="module">
+            import * as THREE from 'three'
+
+            // canvas
+            const canvas = document.querySelector('canvas.webgl')
+
+            // sizes
+            const sizes = {
+                width: 500,
+                height: 500
+            }
+
+            // scene
+            const scene = new THREE.Scene()
+
+            // obj
+            const group = new THREE.Group()
+            group.position.y = 1
+            group.scale.y = 2
+            group.rotation.y = 1
+            scene.add(group)
+
+            const cube1 = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.MeshBasicMaterial({color: 'blue'})
+            )
+            group.add(cube1)
+
+            const cube2 = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.MeshBasicMaterial({color: 'red'})
+            )
+            cube2.position.x = -2
+            group.add(cube2)
+
+            const cube3 = new THREE.Mesh(
+                new THREE.BoxGeometry(1, 1, 1),
+                new THREE.MeshBasicMaterial({color: 'green'})
+            )
+            cube3.position.x = 2
+            group.add(cube3)
+
+
+            // cam
+            const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
+            // camera.position.x = 1
+            // camera.position.y = 1
+            camera.position.z = 3
+
+            scene.add(camera)
+
+            // renderer
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas
+            })
+            renderer.setSize(sizes.width, sizes.height)
+            renderer.render(scene, camera)
+        </script>
+    </body>
+</html>
