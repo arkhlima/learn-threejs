@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Basic</title>
+    </head>
+    <body style="margin: 0;">
+        <canvas class="webgl"></canvas>
+
+        <script type="module">
+            import * as THREE from 'three'
+
+            // canvas
+            const canvas = document.querySelector('canvas.webgl')
+
+            // sizes
+            const sizes = {
+                width: 500,
+                height: 500
+            }
+
+            // scene
+            const scene = new THREE.Scene()
+
+            // obj
+            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+            const cubeMaterial = new THREE.MeshBasicMaterial({
+                color: 'blue'
+            })
+            const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
+            scene.add(cubeMesh)
+
+            // cam
+            const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height)
+            camera.position.x = 1
+            camera.position.y = 1
+            camera.position.z = 2
+            scene.add(camera)
+
+            // renderer
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas
+            })
+            renderer.setSize(sizes.width, sizes.height)
+            renderer.render(scene, camera)
+        </script>
+    </body>
+</html>
