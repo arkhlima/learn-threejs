@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Fullscreen</title>
+    </head>
+    <body style="margin: 0;">
+        <canvas class="webgl"></canvas>
+
+        <script type="module">
+            import * as THREE from 'three'
+            import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+            import gsap from 'gsap'
+            import * as dat from 'lil-gui'
+
+            // canvas
+            const canvas = document.querySelector('canvas.webgl')
+
+            // gui
+            const gui = new dat.GUI()
+
+            const params = {
+                color: 0x0000ff,
+                spin: () => {
+                    gsap.to(cubeMesh.rotation, {
+                        duration: 1,
+                        y: cubeMesh.rotation.y + Math.PI * 2
+                    })
+                }
+            }
+
+            // sizes
+            const sizes = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+            window.addEventListener('resize', () => {
+                // update size
+                sizes.width = window.innerWidth
+                sizes.height = window.innerHeight
+
+                // update camera
+                camera.aspect = sizes.width / sizes.height
+                camera.updateProjectionMatrix()
+
+                // update renderer
+                renderer.setSize(sizes.width, sizes.height)
+                renderer.setPixelRatio(window.devicePixelRatio)
+            })
+
+            window.addEventListener('dblclick', () => {
+                const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement
+
+                if(!fullscreenElement)
+                {
+                    if(canvas.requestFullscreen)
+                    {
+                        canvas.requestFullscreen()
+                    }
+                    else if(canvas.webkitRequestFullscreen)
+                    {
+                        canvas.webkitRequestFullscreen()
+                    }
+                }
+                else
+                {
+                    if(document.exitFullscreen)
+                    {
+                        document.exitFullscreen()
+                    }
+                    else if(document.webkitExitFullscreen)
+                    {
+                        document.webkitExitFullscreen()
+                    }
+                }
+            })
+
+            // scene
+            const scene = new THREE.Scene()
+
+            // cursor
+            const cursor = {
+                x: 0,
+                y: 0
+            }
+            window.addEventListener('mousemove', (event) => {
+                cursor.x = event.clientX / sizes.width - 0.5
+                cursor.y = - (event.clientY / sizes.height - 0.5)
+            })
+
+            // obj
+            const cubeGeometry = new THREE.BoxGeometry(1, 1, 1)
+            const cubeMaterial = new THREE.MeshBasicMaterial({
+                color: params.color
+            })
+            const cubeMesh = new THREE.Mesh(cubeGeometry, cubeMaterial)
+            scene.add(cubeMesh)
+
+            gui.add(cubeMesh.position, 'y', -3, 3, 0.01).name('elevation')
+            gui.add(cubeMesh, 'visible')
+            gui.add(cubeMaterial, 'wireframe')
+            gui.addColor(params, 'color').onChange(() => {
+                cubeMaterial.color.set(params.color)
+            })
+            gui.add(params, 'spin')
+
+            // cam
+            const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+            // const aspectRatio = sizes.width / sizes.height
+            // const camera = new THREE.OrthographicCamera(-1 * aspectRatio, 1 * aspectRatio, 1, -1, 0.1, 100)
+            // camera.position.x = 2
+            // camera.position.y = 2
+            camera.position.z = 3
+            camera.lookAt(cubeMesh.position)
+
+            scene.add(camera)
+
+            // controls
+            const controls = new OrbitControls(camera, canvas)
+            // controls.target.y = 1
+            // controls.update()
+            controls.enableDamping = true
+
+            // renderer
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas
+            })
+            renderer.setSize(sizes.width, sizes.height)
+            renderer.setPixelRatio(window.devicePixelRatio)
+
+            // clock
+            const clock = new THREE.Clock()
+
+            // gsap example
+            // gsap.to(cubeMesh.position, {
+            //     duration: 1,
+            //     delay: 1,
+            //     x: 2
+            // })
+            // gsap.to(cubeMesh.position, {
+            //     duration: 1,
+            //     delay: 2,
+            //     x: 0
+            // })
+
+            const tick = () => {
+                // clock
+                const elapsedTime = clock.getElapsedTime()
+
+                // update (camera)
+                // camera.position.x = Math.sin(cursor.x * Math.PI * 2) * 3
+                // camera.position.y = cursor.y * 5
+                // camera.position.z = Math.cos(cursor.x * Math.PI * 2) * 3
+                // camera.lookAt(cubeMesh.position)
+
+                controls.update()
+
+                // update (animate)
+                // cubeMesh.rotation.y = elapsedTime * Math.PI * 2
+                // cubeMesh.position.y = Math.sin(elapsedTime)
+                // cubeMesh.position.x = Math.cos(elapsedTime)
+                // camera.position.y = Math.sin(elapsedTime)
+                // camera.position.x = Math.cos(elapsedTime)
+
+                // render
+                renderer.render(scene, camera)
+
+                window.requestAnimationFrame(tick)
+            }
+            tick()
+        </script>
+    </body>
+</html>
