@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>Fullscreen</title>
+    </head>
+    <body style="margin: 0;">
+        <canvas class="webgl"></canvas>
+
+        <script type="module">
+            import * as THREE from 'three'
+            import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+            import { FontLoader } from 'three/examples/jsm/loaders/FontLoader.js'
+            import { TextGeometry } from 'three/examples/jsm/geometries/TextGeometry.js'
+            import typefaceFont from 'three/examples/fonts/helvetiker_regular.typeface.json'
+
+            // canvas
+            const canvas = document.querySelector('canvas.webgl')
+
+            // scene
+            const scene = new THREE.Scene()
+
+            // textures
+            const textureLoader = new THREE.TextureLoader()
+            const matcapTexture = textureLoader.load('/textures/matcaps/4.png')
+
+            // fonts
+            const fontLoader = new FontLoader()
+
+            fontLoader.load(
+                '/fonts/helvetiker_regular.typeface.json',
+                (font) =>
+                {
+                    // material
+                    const material = new THREE.MeshMatcapMaterial({ matcap: matcapTexture })
+
+                    // text
+                    const textGeometry = new TextGeometry(
+                        'ridwanto',
+                        {
+                            font: font,
+                            size: 0.5,
+                            height: 0.1,
+                            curveSegments: 12,
+                            bevelEnabled: true,
+                            bevelThickness: 0.03,
+                            bevelSize: 0.01,
+                            bevelOffset: 0,
+                            bevelSegments: 5
+                        }
+                    )
+                    textGeometry.center()
+
+                    const text = new THREE.Mesh(textGeometry, material)
+                    scene.add(text)
+
+                    // obj
+                    const geometry = new THREE.IcosahedronGeometry(0.5, 0)
+
+                    for(let i = 0; i < 200; i++)
+                    {
+                        const obj = new THREE.Mesh(geometry, material)
+                        obj.position.x = (Math.random() - 0.5) * 10
+                        obj.position.y = (Math.random() - 0.5) * 10
+                        obj.position.z = (Math.random() - 0.5) * 10
+                        obj.rotation.x = Math.random() * Math.PI
+                        obj.rotation.y = Math.random() * Math.PI
+                        const scale = Math.random()
+                        obj.scale.set(scale, scale, scale)
+
+                        scene.add(obj)
+                    }
+                }
+            )
+
+            // sizes
+            const sizes = {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+
+            window.addEventListener('resize', () =>
+            {
+                // update sizes
+                sizes.width = window.innerWidth
+                sizes.height = window.innerHeight
+
+                // update camera
+                camera.aspect = sizes.width / sizes.height
+                camera.updateProjectionMatrix()
+
+                // update renderer
+                renderer.setSize(sizes.width, sizes.height)
+                renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+            })
+
+            // camera
+            const camera = new THREE.PerspectiveCamera(75, sizes.width / sizes.height, 0.1, 100)
+            camera.position.x = 1
+            camera.position.y = 1
+            camera.position.z = 2
+            scene.add(camera)
+
+            // controls
+            const controls = new OrbitControls(camera, canvas)
+            controls.enableDamping = true
+
+            // renderer
+            const renderer = new THREE.WebGLRenderer({
+                canvas: canvas
+            })
+            renderer.setSize(sizes.width, sizes.height)
+            renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+
+            // anim
+            const clock = new THREE.Clock()
+
+            const tick = () =>
+            {
+                const elapsedTime = clock.getElapsedTime()
+
+                // update controls
+                controls.update()
+
+                // render
+                renderer.render(scene, camera)
+
+                window.requestAnimationFrame(tick)
+            }
+
+            tick()
+        </script>
+    </body>
+</html>
